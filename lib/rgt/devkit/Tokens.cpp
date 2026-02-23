@@ -40,8 +40,12 @@ std::vector<std::string> split(const std::string & str)
     return result;
 }
 
-} // namespace
-
+/**
+ * @brief Проверяет является ли access токен валидным
+ * @note Токен является валидным в том случае, если у него корректная подпись и он не просрочен
+ * @param token Токен
+ * @return true, если токен валидный, в противном случае false
+ */
 bool isAccessTokenValid(const std::string& token) noexcept
 {
     try
@@ -59,6 +63,8 @@ bool isAccessTokenValid(const std::string& token) noexcept
         return false;
     }
 }
+
+} // namespace
 
 Payload extractPayload(const std::string& token)
 {

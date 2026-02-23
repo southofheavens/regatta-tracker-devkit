@@ -10,14 +10,6 @@ namespace RGT::Devkit::Tokens
 {
 
 /**
- * @brief Проверяет является ли access токен валидным
- * @note Токен является валидным в том случае, если у него корректная подпись и он не просрочен
- * @param token Токен
- * @return true, если токен валидный, в противном случае false
- */
-bool isAccessTokenValid(const std::string& token) noexcept;
-
-/**
  * @brief Полезная нагрузка access токена
  */
 struct Payload 
