@@ -29,14 +29,14 @@ void checkContentLengthIsNull(const Poco::Net::HTTPServerRequest & request)
 
 void checkContentType(const Poco::Net::HTTPServerRequest & request, const std::string & contentType)
 {
-    const std::string & contentType = request.getContentType();
+    const std::string & reqContentType = request.getContentType();
 
-    if (contentType.empty()) {
+    if (reqContentType.empty()) {
         throw RGT::Devkit::RGTException("Expected to receive 'Content-Type' header", 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
     }
 
-    if (contentType.find(contentType) == std::string::npos) {
+    if (reqContentType.find(contentType) == std::string::npos) {
         throw RGT::Devkit::RGTException(std::format("Content-Type must be {}", contentType), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
     }
