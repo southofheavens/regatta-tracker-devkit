@@ -29,13 +29,26 @@ void checkContentType(const Poco::Net::HTTPServerRequest & request, const std::s
 /// @param request Ссылка на запрос
 /// @param header Заголовок
 /// @throw RGT::Devkit::RGTException если запрос не содержит указанный заголовок
+/// @return Ссылка на значение
+/// @warning После вызова деструктора для объекта request, ссылка, которая была возвращена из функции,
+/// станет висячей
 const std::string & extractValueByHeader(const Poco::Net::HTTPServerRequest & request, const std::string & header);
 
 /// @brief Извлекает из объекта JSON значение, соответствующее ключу
 /// @param json Указатель на объект JSON
 /// @param key Ключ
 /// @throw RGT::Devkit::RGTException если объект JSON не содержит указанный ключ
-Poco::Dynamic::Var extractValueByKey(Poco::JSON::Object::Ptr json, const std::string & key);
+/// @return Значение, соответствующее ключу
+Poco::Dynamic::Var extractValueByKey(const Poco::JSON::Object::Ptr json, const std::string & key);
+
+/// @brief Извлекает из cookies значение, соответствующее ключу
+/// @param cookies Ссылка на cookies
+/// @param key Ключ
+/// @throw RGT::Devkit::RGTException если в cookies отсутствует указанный ключ
+/// @return Ссылка на значение
+/// @warning После вызова деструктора для объекта cookies, ссылка, которая была возвращена из функции,
+/// станет висячей
+const std::string & extractValueFromCookies(const Poco::Net::NameValueCollection & cookies, const std::string & key);
 
 } // namespace RGT::Devkit
 

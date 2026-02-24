@@ -53,9 +53,26 @@ const std::string & extractValueByHeader(const Poco::Net::HTTPServerRequest & re
     }
 }
 
-Poco::Dynamic::Var extractValueByKey(Poco::JSON::Object::Ptr json, const std::string & key)
+Poco::Dynamic::Var extractValueByKey(const Poco::JSON::Object::Ptr json, const std::string & key)
 {
-    assert(false);
+    try {
+        return json->get(key);
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
+    }
+}
+
+const std::string & extractValueFromCookies(const Poco::Net::NameValueCollection & cookies, const std::string & key)
+{
+    try {
+        return cookies[key];
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' field in cookies", key), 
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
+    }
 }
 
 } // namespace RGT::Devkit
