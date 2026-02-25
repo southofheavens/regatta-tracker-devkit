@@ -29,37 +29,26 @@ void checkContentLengthIsNull(const Poco::Net::HTTPServerRequest & request)
 
 void checkContentType(const Poco::Net::HTTPServerRequest & request, const std::string & contentType)
 {
-    const std::string & contentType = request.getContentType();
+    const std::string & reqContentType = request.getContentType();
 
-    if (contentType.empty()) {
+    if (reqContentType.empty()) {
         throw RGT::Devkit::RGTException("Expected to receive 'Content-Type' header", 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
     }
 
-    if (contentType.find(contentType) == std::string::npos) {
+    if (reqContentType.find(contentType) == std::string::npos) {
         throw RGT::Devkit::RGTException(std::format("Content-Type must be {}", contentType), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
     }
 }
 
-const std::string & extractValueByHeader(const Poco::Net::HTTPServerRequest & request, const std::string & header)
+const std::string & extractValueFromHeaders(const Poco::Net::HTTPServerRequest & request, const std::string & header)
 {
     try {
         return request.get(header);
     }
     catch (...) {
         throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' header", header), 
-            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
-    }
-}
-
-Poco::Dynamic::Var extractValueByKey(const Poco::JSON::Object::Ptr json, const std::string & key)
-{
-    try {
-        return json->get(key);
-    }
-    catch (...) {
-        throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
     }
 }
@@ -71,6 +60,17 @@ const std::string & extractValueFromCookies(const Poco::Net::NameValueCollection
     }
     catch (...) {
         throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' field in cookies", key), 
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
+    }
+}
+
+Poco::Dynamic::Var extractValueFromJson(const Poco::JSON::Object::Ptr json, const std::string & key)
+{
+    try {
+        return json->get(key);
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
     }
 }
