@@ -40,7 +40,7 @@ public:
     virtual void requestProcessing(Poco::Net::HTTPServerRequest & request, Poco::Net::HTTPServerResponse & response) = 0;
 
 protected:
-    std::any payload;
+    std::any payload_;
 };
 
 } // namespace RGT::Devkit
