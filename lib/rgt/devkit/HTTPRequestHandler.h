@@ -18,7 +18,7 @@ private:
     try
     {
         requestPreprocessing(request);
-        payload = extractPayloadFromRequest(request);
+        payload_ = extractPayloadFromRequest(request);
         requestProcessing(request, response);
     }
     catch (const RGT::Devkit::RGTException & e)
