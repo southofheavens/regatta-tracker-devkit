@@ -32,7 +32,7 @@ private:
         RGT::Devkit::sendJsonResponse(response, "error", "Internal server error");
     }
 
-public:
+protected:
     virtual void requestPreprocessing(Poco::Net::HTTPServerRequest & request) = 0;
 
     virtual std::any extractPayloadFromRequest(Poco::Net::HTTPServerRequest & request) = 0;
