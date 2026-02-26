@@ -66,10 +66,9 @@ const std::string & extractValueFromCookies(const Poco::Net::NameValueCollection
 
 Poco::Dynamic::Var extractValueFromJson(const Poco::JSON::Object::Ptr json, const std::string & key)
 {
-    try {
-        return json->get(key);
-    }
-    catch (...) {
+    Poco::Dynamic::Var dvar = json->get(key);
+    
+    if (dvar.isEmpty()) {
         throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
     }
