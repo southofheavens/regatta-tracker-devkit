@@ -3,6 +3,8 @@
 #include <Poco/JWT/Token.h>
 #include <Poco/JWT/Serializer.h>
 #include <Poco/JWT/Signer.h>
+#include <Poco/JSON/Parser.h>
+#include <Poco/Net/HTTPServerRequest.h>
 
 namespace
 {
@@ -75,8 +77,8 @@ void validateJWTFormat(const std::string & token)
 
 /// @brief Проверяет является ли access токен валидным
 /// @note Токен является валидным, если:
-/// @note У него корректная подпись
-/// @note Он не просрочен
+/// @note - У него корректная подпись
+/// @note - Он не просрочен
 /// @param token Токен
 /// @throw RGT::Devkit::RGTException если токен невалидный
 void accessTokenValidate(const std::string & token)
@@ -89,14 +91,16 @@ void accessTokenValidate(const std::string & token)
         decoded = signer.verify(token);
     }
     catch (...) {
-        // throw
+        throw RGT::Devkit::RGTException("Received token have invalid signature",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
     }
 
     Poco::Timestamp expires = decoded.getExpiration();
     Poco::Timestamp now;
     
     if (expires < now) {
-        // throw
+        throw RGT::Devkit::RGTException("Received token is expired or does not contain 'exp' field",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);    
     }
 }
 
@@ -156,6 +160,8 @@ std::string HTTPRequestHandler::extractTokenFromRequest(Poco::Net::HTTPServerReq
 
 HTTPRequestHandler::JWTPayload HTTPRequestHandler::extractPayload(const std::string & token)
 {
+    // На всякий случай проверим токен на соответствие формату JWT
+    validateJWTFormat(token);
     // Валидация токена
     accessTokenValidate(token);
 
@@ -173,7 +179,7 @@ HTTPRequestHandler::JWTPayload HTTPRequestHandler::extractPayload(const std::str
         tokenPayload.sub = std::stoull(sub);
     }
     catch (...) {
-        throw RGT::Devkit::RGTException("Sub must be an unsigned integer (user ID)",
+        throw RGT::Devkit::RGTException("Sub must contain a string that contains a unsigned integer (user ID)",
             Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
     }
 
@@ -183,7 +189,7 @@ HTTPRequestHandler::JWTPayload HTTPRequestHandler::extractPayload(const std::str
         tokenPayload.role = payload.getValue<std::string>("role");
     }
     catch (...) {
-        throw RGT::Devkit::RGTException("Received invalid access token",
+        throw RGT::Devkit::RGTException("Received token does not contain 'role' field or 'role' field is not string type",
             Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
     }
 
@@ -192,6 +198,27 @@ HTTPRequestHandler::JWTPayload HTTPRequestHandler::extractPayload(const std::str
     tokenPayload.exp = std::chrono::seconds(exp.epochTime());
 
     return tokenPayload;
+}
+
+Poco::JSON::Object::Ptr HTTPRequestHandler::extractJsonObjectFromRequest(Poco::Net::HTTPServerRequest & req)
+{    
+    Poco::JSON::Parser parser;
+
+    Poco::Dynamic::Var result;
+    try {
+        result = parser.parse(req.stream());
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("Received invalid json", 
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+    }
+
+    if (result.type() != typeid(Poco::JSON::Object::Ptr)) {
+        throw RGT::Devkit::RGTException("Expected JSON object, not array", 
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+    }
+
+    return result.extract<Poco::JSON::Object::Ptr>();
 }
 
 void HTTPRequestHandler::checkContentLength(const Poco::Net::HTTPServerRequest & request, const uint64_t & maxContentLength)
@@ -260,6 +287,17 @@ Poco::Dynamic::Var HTTPRequestHandler::extractValueFromJson(const Poco::JSON::Ob
         throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
     }
+}
+
+void HTTPRequestHandler::sendJsonResponse(Poco::Net::HTTPServerResponse & res, const std::string & status, 
+    const std::string & message)
+{
+    Poco::JSON::Object json;
+    json.set("status", status);
+    json.set("message", message);
+
+    std::ostream & out = res.send();
+    json.stringify(out);
 }
 
 } // namespace RGT::Devkit

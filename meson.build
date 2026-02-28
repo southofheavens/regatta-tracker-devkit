@@ -15,9 +15,8 @@ poco_net = cpp.find_library('PocoNet', required: true)
 
 inc = include_directories('lib')
 sources = files(
-  'lib/rgt/devkit/Tokens.cpp',
   'lib/rgt/devkit/General.cpp',
-  'lib/rgt/devkit/RequestProcessing.cpp'
+  'lib/rgt/devkit/HTTPRequestHandler.cpp',
 )
 
 all_deps = [
