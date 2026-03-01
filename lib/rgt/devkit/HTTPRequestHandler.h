@@ -2,6 +2,7 @@
 #define __HTTP_REQUEST_HANDLER_H__
 
 #include <rgt/devkit/RGTException.h>
+#include <rgt/devkit/JWTPayload.h>
 
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerResponse.h>
@@ -55,14 +56,6 @@ protected:
     std::any payload_;
 
 private:
-    /// @brief Полезная нагрузка access токена
-    struct JWTPayload 
-    {
-        uint64_t             sub;
-        std::string          role;
-        std::chrono::seconds exp;
-    };
-
     /// Большинство из этих статических методов по сути своей являются обёртками над функциями/методами
     /// из Poco. Мои обертки выбрасывают RGTException, который содержит текст и код ответа HTTP,
     /// которые, в свою очередь, мы можем отправить клиенту, чтобы он узнал причину,
