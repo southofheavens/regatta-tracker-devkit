@@ -158,7 +158,7 @@ std::string HTTPRequestHandler::extractTokenFromRequest(Poco::Net::HTTPServerReq
     return tokenInfo[1];
 }
 
-HTTPRequestHandler::JWTPayload HTTPRequestHandler::extractPayload(const std::string & token)
+RGT::Devkit::JWTPayload HTTPRequestHandler::extractPayload(const std::string & token)
 {
     // На всякий случай проверим токен на соответствие формату JWT
     validateJWTFormat(token);
