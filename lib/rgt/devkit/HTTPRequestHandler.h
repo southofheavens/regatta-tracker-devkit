@@ -97,18 +97,18 @@ private:
     /// @param request Ссылка на запрос
     /// @param maxContentLength Максимальная длина контента 
     /// @throw RGT::Devkit::RGTException если длина контента неизвестна или превышает установленный лимит
-    static void checkContentLength(const Poco::Net::HTTPServerRequest & request, const uint64_t & maxContentLength);
+    static void checkContentLength(Poco::Net::HTTPServerRequest & request, const uint64_t & maxContentLength);
 
     /// @brief Проверяет, что длина контента из запроса не равна нулю
     /// @param request Ссылка на запрос
     /// @throw RGT::Devkit::RGTException если длина контента равна нулю
-    static void checkContentLengthIsNull(const Poco::Net::HTTPServerRequest & request);
+    static void checkContentLengthIsNull(Poco::Net::HTTPServerRequest & request);
 
     /// @brief Проверяет, что тип контента соответствует указанному
     /// @param request Ссылка на запрос
     /// @param contentType Тип контента
     /// @throw RGT::Devkit::RGTException если запрос не содержит тип контента или он не соответствует указанному
-    static void checkContentType(const Poco::Net::HTTPServerRequest & request, const std::string & contentType);
+    static void checkContentType(Poco::Net::HTTPServerRequest & request, const std::string & contentType);
 
     /// @brief Извлекает из запроса значение, соответствующее заголовку
     /// @param request Ссылка на запрос
@@ -117,7 +117,7 @@ private:
     /// @return Ссылка на значение
     /// @warning После вызова деструктора для объекта request, ссылка, которая была возвращена из функции,
     /// станет висячей
-    static const std::string & extractValueFromHeaders(const Poco::Net::HTTPServerRequest & request, const std::string & header);
+    static const std::string & extractValueFromHeaders(Poco::Net::HTTPServerRequest & request, const std::string & header);
 
     /// @brief Извлекает из cookies значение, соответствующее ключу
     /// @param cookies Ссылка на cookies
@@ -126,20 +126,44 @@ private:
     /// @return Ссылка на значение
     /// @warning После вызова деструктора для объекта cookies, ссылка, которая была возвращена из функции,
     /// станет висячей
-    static const std::string & extractValueFromCookies(const Poco::Net::NameValueCollection & cookies, const std::string & key);
+    static const std::string & extractValueFromCookies(Poco::Net::NameValueCollection & cookies, const std::string & key);
 
     /// @brief Извлекает из объекта JSON значение, соответствующее ключу
     /// @param json Указатель на объект JSON
     /// @param key Ключ
     /// @throw RGT::Devkit::RGTException если объект JSON не содержит указанный ключ
     /// @return Значение, соответствующее ключу
-    static Poco::Dynamic::Var extractValueFromJson(const Poco::JSON::Object::Ptr json, const std::string & key);
+    static Poco::Dynamic::Var extractValueFromJson(Poco::JSON::Object::Ptr json, const std::string & key);
 
     /**
      * Отправляет клиенту ответ со статусом status и сообщением message 
      */
     static void sendJsonResponse(Poco::Net::HTTPServerResponse & res,
         const std::string & status, const std::string & message);
+
+    /// @brief Извлекает из cookies запроса или объекта JSON (который взят из запроса!) refresh-токен
+    /// @param request Ссылка на запрос
+    /// @param json Указатель на указатель на json
+    /// @throw RGT::Devkit::RGTException если в cookies запроса отсутствует refresh-токен и при попытке
+    /// извлечь JSON из запроса (если *json == nullptr) произошла ошибка
+    /// @throw RGT::Devkit::RGTException если в cookies запроса и объекте JSON отсутствует refresh-токен
+    /// @return Рефреш-токен
+    /// @warning Сначала пытается извлечь из cookies запроса, затем из json
+    /// @note Если *json == nullptr, функция пытается извлечь json из запроса и присвоить значение *json
+    static std::string extractRefreshFromRequest(Poco::Net::HTTPServerRequest & request,
+        std::shared_ptr<Poco::JSON::Object::Ptr> json);
+
+    /// @brief Извлекает из заголовка запроса или объекта JSON (который взят из запроса!) fingerprint
+    /// @param request Ссылка на запрос
+    /// @param json Указатель на указатель на json
+    /// @throw RGT::Devkit::RGTException если в заголовках запроса отсутствует fingerprint и при попытке
+    /// извлечь JSON из запроса (если *json == nullptr) произошла ошибка
+    /// @throw RGT::Devkit::RGTException если в заголовках запроса и объекте JSON отсутствует fingerprint
+    /// @return Fingerprint
+    /// @warning Сначала пытается извлечь из заголовков запроса, затем из json
+    /// @note Если *json == nullptr, функция пытается извлечь json из запроса и присвоить значение *json
+    static std::string extractFingerprintFromRequest(Poco::Net::HTTPServerRequest & request,
+        std::shared_ptr<Poco::JSON::Object::Ptr> json);
 };
 
 } // namespace RGT::Devkit

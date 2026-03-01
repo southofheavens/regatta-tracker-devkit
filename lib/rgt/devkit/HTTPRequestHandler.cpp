@@ -221,7 +221,7 @@ Poco::JSON::Object::Ptr HTTPRequestHandler::extractJsonObjectFromRequest(Poco::N
     return result.extract<Poco::JSON::Object::Ptr>();
 }
 
-void HTTPRequestHandler::checkContentLength(const Poco::Net::HTTPServerRequest & request, const uint64_t & maxContentLength)
+void HTTPRequestHandler::checkContentLength(Poco::Net::HTTPServerRequest & request, const uint64_t & maxContentLength)
 {
     if (request.getContentLength() == Poco::Net::HTTPMessage::UNKNOWN_CONTENT_LENGTH) {
         throw RGT::Devkit::RGTException("Content length is unknown", 
@@ -234,7 +234,7 @@ void HTTPRequestHandler::checkContentLength(const Poco::Net::HTTPServerRequest &
     }
 }
 
-void HTTPRequestHandler::checkContentLengthIsNull(const Poco::Net::HTTPServerRequest & request)
+void HTTPRequestHandler::checkContentLengthIsNull(Poco::Net::HTTPServerRequest & request)
 {
     if (request.getContentLength() == 0) {
         throw RGT::Devkit::RGTException("Content length is zero", 
@@ -242,7 +242,7 @@ void HTTPRequestHandler::checkContentLengthIsNull(const Poco::Net::HTTPServerReq
     }
 }
 
-void HTTPRequestHandler::checkContentType(const Poco::Net::HTTPServerRequest & request, const std::string & contentType)
+void HTTPRequestHandler::checkContentType(Poco::Net::HTTPServerRequest & request, const std::string & contentType)
 {
     const std::string & reqContentType = request.getContentType();
 
@@ -257,7 +257,7 @@ void HTTPRequestHandler::checkContentType(const Poco::Net::HTTPServerRequest & r
     }
 }
 
-const std::string & HTTPRequestHandler::extractValueFromHeaders(const Poco::Net::HTTPServerRequest & request, const std::string & header)
+const std::string & HTTPRequestHandler::extractValueFromHeaders(Poco::Net::HTTPServerRequest & request, const std::string & header)
 {
     try {
         return request.get(header);
@@ -268,7 +268,7 @@ const std::string & HTTPRequestHandler::extractValueFromHeaders(const Poco::Net:
     }
 }
 
-const std::string & HTTPRequestHandler::extractValueFromCookies(const Poco::Net::NameValueCollection & cookies, const std::string & key)
+const std::string & HTTPRequestHandler::extractValueFromCookies(Poco::Net::NameValueCollection & cookies, const std::string & key)
 {
     try {
         return cookies[key];
@@ -279,7 +279,7 @@ const std::string & HTTPRequestHandler::extractValueFromCookies(const Poco::Net:
     }
 }
 
-Poco::Dynamic::Var HTTPRequestHandler::extractValueFromJson(const Poco::JSON::Object::Ptr json, const std::string & key)
+Poco::Dynamic::Var HTTPRequestHandler::extractValueFromJson(Poco::JSON::Object::Ptr json, const std::string & key)
 {
     Poco::Dynamic::Var dvar = json->get(key);
     
@@ -287,6 +287,8 @@ Poco::Dynamic::Var HTTPRequestHandler::extractValueFromJson(const Poco::JSON::Ob
         throw RGT::Devkit::RGTException(std::format("Expected to receive '{}' json field", key), 
             Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST); 
     }
+
+    return dvar;
 }
 
 void HTTPRequestHandler::sendJsonResponse(Poco::Net::HTTPServerResponse & res, const std::string & status, 
@@ -298,6 +300,123 @@ void HTTPRequestHandler::sendJsonResponse(Poco::Net::HTTPServerResponse & res, c
 
     std::ostream & out = res.send();
     json.stringify(out);
+}
+
+std::string HTTPRequestHandler::extractRefreshFromRequest(Poco::Net::HTTPServerRequest & request,
+    std::shared_ptr<Poco::JSON::Object::Ptr> json)
+{
+    if (json == nullptr)
+    {
+        // TODO лог
+        throw RGT::Devkit::RGTException("Internal server error", 
+            Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    // Сначала пытаемся извлечь из cookies
+    try 
+    {
+        Poco::Net::NameValueCollection cookies;
+        request.getCookies(cookies); 
+        return HTTPRequestHandler::extractValueFromCookies(cookies, "X-Refresh-token");
+    }
+    catch (...) 
+    {
+    }
+
+    try {
+        HTTPRequestHandler::checkContentType(request, "application/json");
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("Refresh token missing in cookies; content-type is not application/json",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
+
+    if (json->isNull()) 
+    {
+        try {
+            *json = HTTPRequestHandler::extractJsonObjectFromRequest(request);
+        }
+        catch (...) 
+        {
+            throw RGT::Devkit::RGTException("Refresh token missing in cookies; request has invalid json or "
+                "json array, not json object",
+                Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+        }
+    }
+        
+    Poco::Dynamic::Var dvRefreshToken;
+    try {
+        dvRefreshToken = (*json)->get("refresh_token");
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("Expected to receive refresh token in the cookies/request body",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
+
+    try {
+        return dvRefreshToken.extract<std::string>();
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("The refresh token must be represented as a string",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
+}
+
+std::string HTTPRequestHandler::extractFingerprintFromRequest(Poco::Net::HTTPServerRequest & request,
+    std::shared_ptr<Poco::JSON::Object::Ptr> json)
+{
+    if (json == nullptr)
+    {
+        // TODO лог
+        throw RGT::Devkit::RGTException("Internal server error", 
+            Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    // Сначала пытаемся извлечь из заголовков
+    try {
+        return HTTPRequestHandler::extractValueFromHeaders(request, "X-Fingerprint");
+    }
+    catch (...) 
+    {
+    }
+
+    try {
+        HTTPRequestHandler::checkContentType(request, "application/json");
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("Fingerprint missing in headers; content-type is not application/json",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
+
+    if (json->isNull()) 
+    {
+        try {
+            *json = HTTPRequestHandler::extractJsonObjectFromRequest(request);
+        }
+        catch (...) 
+        {
+            throw RGT::Devkit::RGTException("Fingerprint missing in headers; request has invalid json or "
+                "json array, not json object",
+                Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+        }
+    }
+    
+    Poco::Dynamic::Var dvFingerprint;
+    try {
+        dvFingerprint = (*json)->get("fingerprint");
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("Expected to receive fingerprint in the headers/request body",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
+
+    try {
+        return dvFingerprint.extract<std::string>();
+    }
+    catch (...) {
+        throw RGT::Devkit::RGTException("The fingerprint must be represented as a string",
+            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+    }
 }
 
 } // namespace RGT::Devkit
