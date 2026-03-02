@@ -12,11 +12,15 @@ poco_foundation = cpp.find_library('PocoFoundation', required: true)
 poco_json = cpp.find_library('PocoJSON', required: true)
 poco_jwt = cpp.find_library('PocoJWT', required: true)
 poco_net = cpp.find_library('PocoNet', required: true)
+poco_redis = cpp.find_library('PocoRedis', required: true)
+poco_data = cpp.find_library('PocoData', required: true)
+poco_data_postgresql = cpp.find_library('PocoDataPostgreSQL', required: false)
 
 inc = include_directories('lib')
 sources = files(
   'lib/rgt/devkit/General.cpp',
   'lib/rgt/devkit/HTTPRequestHandler.cpp',
+  'lib/rgt/devkit/Connections.cpp',
 )
 
 all_deps = [
@@ -24,7 +28,10 @@ all_deps = [
   poco_foundation,
   poco_json,
   poco_jwt,
-  poco_net
+  poco_net,
+  poco_redis,
+  poco_data,
+  poco_data_postgresql
 ]
 
 devkit_lib = shared_library('devkit', sources,
