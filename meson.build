@@ -15,6 +15,8 @@ poco_net = cpp.find_library('PocoNet', required: true)
 poco_redis = cpp.find_library('PocoRedis', required: true)
 poco_data = cpp.find_library('PocoData', required: true)
 poco_data_postgresql = cpp.find_library('PocoDataPostgreSQL', required: false)
+aws_core = cpp.find_library('aws-cpp-sdk-core', required: true)
+aws_s3 = cpp.find_library('aws-cpp-sdk-s3', required: true)
 
 inc = include_directories('lib')
 sources = files(
@@ -31,12 +33,15 @@ all_deps = [
   poco_net,
   poco_redis,
   poco_data,
-  poco_data_postgresql
+  poco_data_postgresql,
+  aws_core,
+  aws_s3
 ]
 
 devkit_lib = shared_library('devkit', sources,
   include_directories: inc,
-  dependencies: all_deps 
+  dependencies: all_deps,
+  cpp_args: ['-DENABLE_TRACING=0']
 )
 
 devkit_dep = declare_dependency(

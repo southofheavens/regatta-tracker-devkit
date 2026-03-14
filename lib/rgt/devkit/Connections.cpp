@@ -2,6 +2,12 @@
 
 #include <Poco/Redis/PoolableConnectionFactory.h>
 
+#include <aws/core/Aws.h>
+#include <aws/core/auth/AWSCredentials.h>
+#include <aws/s3/S3Client.h>
+#include <aws/s3/model/PutObjectRequest.h>
+#include <aws/s3/model/GetObjectRequest.h>
+
 namespace RGT::Devkit
 {
 
@@ -80,5 +86,28 @@ std::unique_ptr<RedisClientObjectPool> connectToRedis
     
     return redisPool;
 } 
+
+std::unique_ptr<Aws::S3::S3Client> connectToS3
+(
+    const std::string & accessKeyId,
+    const std::string & secretKey,
+    const std::string & endpointOverride,
+    const std::string & region, 
+    const Aws::Http::Scheme & scheme,
+    bool verifySsl,
+    bool useVirtualAddressing,
+    Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy signingPolicy
+)
+{
+    Aws::Auth::AWSCredentials credentials(accessKeyId, secretKey);
+
+    Aws::Client::ClientConfiguration config;
+    config.endpointOverride = endpointOverride;
+    config.region = region;
+    config.scheme = scheme;
+    config.verifySSL = verifySsl;
+
+    return std::make_unique<Aws::S3::S3Client>(credentials, config, signingPolicy, useVirtualAddressing);
+}
 
 } // namespace RGT::Devkit
