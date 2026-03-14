@@ -107,7 +107,16 @@ std::unique_ptr<Aws::S3::S3Client> connectToS3
     config.scheme = scheme;
     config.verifySSL = verifySsl;
 
-    return std::make_unique<Aws::S3::S3Client>(credentials, config, signingPolicy, useVirtualAddressing);
+    std::unique_ptr<Aws::S3::S3Client> clientPtr = 
+        std::make_unique<Aws::S3::S3Client>(credentials, config, signingPolicy, useVirtualAddressing);
+
+    Aws::S3::Model::ListBucketsRequest request;
+    auto outcome = clientPtr->ListBuckets(request);
+    if (!outcome.IsSuccess()) {
+        throw std::runtime_error(outcome.GetError().GetMessage());
+    }
+
+    return clientPtr;
 }
 
 } // namespace RGT::Devkit
