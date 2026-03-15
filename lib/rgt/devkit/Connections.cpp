@@ -99,7 +99,7 @@ std::unique_ptr<Aws::S3::S3Client> connectToS3
     Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy signingPolicy
 )
 {
-    Aws::Auth::AWSCredentials credentials(accessKeyId, secretKey);
+    Aws::Auth::AWSCredentials credentials(Aws::String(accessKeyId.c_str()), Aws::String(secretKey.c_str()));
 
     Aws::Client::ClientConfiguration config;
     config.endpointOverride = endpointOverride;
@@ -113,7 +113,7 @@ std::unique_ptr<Aws::S3::S3Client> connectToS3
     Aws::S3::Model::ListBucketsRequest request;
     auto outcome = clientPtr->ListBuckets(request);
     if (!outcome.IsSuccess()) {
-        throw std::runtime_error(outcome.GetError().GetMessage());
+        throw std::runtime_error(outcome.GetError().GetMessage().c_str());
     }
 
     return clientPtr;
