@@ -401,11 +401,9 @@ std::string HTTPRequestHandler::extractFingerprintFromRequest(Poco::Net::HTTPSer
         }
     }
     
-    Poco::Dynamic::Var dvFingerprint;
-    try {
-        dvFingerprint = (*json)->get("fingerprint");
-    }
-    catch (...) {
+    Poco::Dynamic::Var dvFingerprint = (*json)->get("fingerprint");
+    if (dvFingerprint.isEmpty())
+    {
         throw RGT::Devkit::RGTException("Expected to receive fingerprint in the headers/request body",
             Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
     }
