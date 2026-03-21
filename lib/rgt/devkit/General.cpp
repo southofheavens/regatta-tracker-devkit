@@ -116,6 +116,9 @@ void readDotEnv()
     while (std::getline(file, line))
     {
         trimString(line);
+        if (line.empty()) {
+            continue;
+        }
         std::pair<std::string, std::string> envVar = parseEnvVar(line);
         if (setenv(envVar.first.c_str(), envVar.second.c_str(), 0) != 0) 
         {
