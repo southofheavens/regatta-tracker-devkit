@@ -2,6 +2,7 @@
 #define __GENERAL_H__
 
 #include <string>
+#include <optional>
 
 namespace Poco::Util { class LayeredConfiguration; } // namespace Poco::Util
 
