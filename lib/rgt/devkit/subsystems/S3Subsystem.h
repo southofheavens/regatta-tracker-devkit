@@ -5,6 +5,7 @@
 
 #include <aws/core/auth/signer/AWSAuthV4Signer.h>
 #include <aws/core/Aws.h>
+#include <aws/s3/S3Client.h>
 
 #include <memory>
 
@@ -26,16 +27,6 @@ class SessionPool;
 } // namespace Poco::Data
 
 } // namespace Poco
-
-namespace Aws 
-{ 
-
-namespace S3
-{
-    class S3Client; 
-} // namespace Aws::S3
-
-} // namespace Aws
 
 namespace RGT::Devkit::Subsystems
 {
