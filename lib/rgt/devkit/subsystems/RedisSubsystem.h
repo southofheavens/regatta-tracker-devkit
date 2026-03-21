@@ -25,7 +25,7 @@ class Application;
 namespace RGT::Devkit::Subsystems
 {
 
-class RedisSubsystem : Poco::Util::Subsystem
+class RedisSubsystem : public Poco::Util::Subsystem
 {
 public:
     using RedisClientObjectPool = Poco::ObjectPool

@@ -40,7 +40,7 @@ namespace S3
 namespace RGT::Devkit::Subsystems
 {
 
-class S3Subsystem : Poco::Util::Subsystem
+class S3Subsystem : public Poco::Util::Subsystem
 {
 public:
     virtual const char * name() const final;

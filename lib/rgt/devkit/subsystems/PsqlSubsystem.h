@@ -27,7 +27,7 @@ class SessionPool;
 namespace RGT::Devkit::Subsystems
 {
 
-class PsqlSubsystem : Poco::Util::Subsystem
+class PsqlSubsystem : public Poco::Util::Subsystem
 {
 public:
     virtual const char * name() const final;
