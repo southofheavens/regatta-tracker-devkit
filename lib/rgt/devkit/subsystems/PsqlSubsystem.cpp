@@ -67,7 +67,7 @@ std::unique_ptr<Poco::Data::SessionPool> PsqlSubsystem::connectToPsql
     try 
     {
         // Проверяем подключение к БД
-        psqlPool_->get() << "SELECT 1", Poco::Data::Keywords::now;
+        sessionPool->get() << "SELECT 1", Poco::Data::Keywords::now;
     }
     catch (...) 
     {
