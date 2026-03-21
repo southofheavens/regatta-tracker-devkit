@@ -4,6 +4,8 @@
 #include <fstream>
 #include <format>
 
+#include <Poco/Util/LayeredConfiguration.h>
+
 namespace
 {
 
@@ -131,6 +133,33 @@ void readDotEnv()
     }
 
     alreadyRead = true;
+}
+
+std::optional<std::string> getEnv(const std::string & envVarName)
+{
+    char * envVar = getenv(envVarName.c_str());
+
+    if (envVar == nullptr) {
+        return std::nullopt;
+    }
+    return std::string(envVar);
+}
+
+std::optional<std::string> getEnvOrCfg(const std::string & envVarName, const std::string & cfgVarName,
+    const Poco::Util::LayeredConfiguration & cfg)
+{
+    std::optional<std::string> env = getEnv(envVarName);
+
+    if (env.has_value()) {
+        return env;
+    }
+
+    try {
+        return cfg.getString(cfgVarName);
+    }
+    catch (...) {
+        return std::nullopt;
+    }
 }
 
 } // namespace RGT::Devkit
