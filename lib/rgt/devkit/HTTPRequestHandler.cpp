@@ -1,4 +1,5 @@
 #include <rgt/devkit/HTTPRequestHandler.h>
+#include <rgt/devkit/General.h>
 
 #include <Poco/JWT/Token.h>
 #include <Poco/JWT/Serializer.h>
@@ -8,9 +9,6 @@
 
 namespace
 {
-
-// TODO Нельзя держать приватный ключ в коде
-const std::string secret_key = "secret_key";
 
 /// @brief Проверяет, что строка соответствует формату Base64Url
 /// @param str Строка
@@ -83,7 +81,15 @@ void validateJWTFormat(const std::string & token)
 /// @throw RGT::Devkit::RGTException если токен невалидный
 void accessTokenValidate(const std::string & token)
 {
-    Poco::JWT::Signer signer(secret_key);
+    static const auto secretKey = []() -> std::string
+    {
+        const std::optional<std::string> secretKey = RGT::Devkit::getEnv("SECRET_KEY");
+        if (not secretKey.has_value()) {
+            throw std::runtime_error("The \"SECRET_KEY\" environment variable is missing for token signature verification");
+        }
+        return *secretKey;
+    }();
+    Poco::JWT::Signer signer(secretKey);
     signer.setAlgorithms({Poco::JWT::Signer::ALGO_HS256});
     
     Poco::JWT::Token decoded;
