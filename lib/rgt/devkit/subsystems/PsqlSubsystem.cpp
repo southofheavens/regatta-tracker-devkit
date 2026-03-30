@@ -3,7 +3,6 @@
 
 #include <Poco/Util/Application.h>
 #include <Poco/Data/PostgreSQL/Connector.h>
-#include <Poco/Data/SessionPool.h>
 
 namespace RGT::Devkit::Subsystems
 {

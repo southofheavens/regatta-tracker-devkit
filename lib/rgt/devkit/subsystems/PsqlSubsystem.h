@@ -2,27 +2,10 @@
 #define __PSQL_SUBSYSTEM_H__
 
 #include <Poco/Util/Subsystem.h>
+#include <Poco/Util/Application.h>
+#include <Poco/Data/SessionPool.h>
 
 #include <memory>
-
-namespace Poco
-{
-
-namespace Util
-{
-
-class Application;
-
-} // namespace Poco::Util
-
-namespace Data
-{
-
-class SessionPool;
-
-} // namespace Poco::Data
-
-} // namespace Poco
 
 namespace RGT::Devkit::Subsystems
 {

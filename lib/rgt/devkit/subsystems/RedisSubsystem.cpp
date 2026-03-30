@@ -1,9 +1,6 @@
 #include <rgt/devkit/subsystems/RedisSubsystem.h>
 #include <rgt/devkit/General.h>
 
-#include <Poco/Util/Application.h>
-#include <Poco/Redis/PoolableConnectionFactory.h>
-
 namespace RGT::Devkit::Subsystems
 {
 

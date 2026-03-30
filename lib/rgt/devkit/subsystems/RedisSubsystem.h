@@ -3,24 +3,8 @@
 
 #include <Poco/Util/Subsystem.h>
 #include <Poco/Redis/Client.h>
-
-namespace Poco
-{
-
-template <class C, class P>
-class PoolableObjectFactory;
-
-template <class C, class P, class F>
-class ObjectPool;
-
-namespace Util
-{
-
-class Application;
-
-} // namespace Poco::Util
-
-} // namespace Poco
+#include <Poco/Redis/PoolableConnectionFactory.h>
+#include <Poco/Util/Application.h>
 
 namespace RGT::Devkit::Subsystems
 {
