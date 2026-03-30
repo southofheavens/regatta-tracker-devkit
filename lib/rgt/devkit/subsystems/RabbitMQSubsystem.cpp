@@ -86,36 +86,14 @@ void RabbitMQSubsystem::initialize(Poco::Util::Application & app)
     if (amqpChannelOpenResult.reply_type != AMQP_RESPONSE_NORMAL) {
         throw std::runtime_error("amqp_channel_open error");
     }
-    amqp_channel_open(conn, (amqp_channel_t)2);
-    amqp_rpc_reply_t amqpChannelOpenResult2 = amqp_get_rpc_reply(conn);
-    if (amqpChannelOpenResult2.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_channel_open 2 error");
-    }
 
-    amqp_queue_declare(conn, 1, amqp_cstring_bytes("queue_analytics"), 0, 0, 0, 0, amqp_empty_table);
+    amqp_queue_declare(conn, 1, amqp_cstring_bytes("postprocessor_tasks"), 0, 0, 0, 0, amqp_empty_table);
     amqp_rpc_reply_t queueAnalyticsDeclareResult = amqp_get_rpc_reply(conn);
     if (queueAnalyticsDeclareResult.reply_type != AMQP_RESPONSE_NORMAL) {
         throw std::runtime_error("amqp_queue_declare error");
     }
-    amqp_queue_declare(conn, 1, amqp_cstring_bytes("queue_management"), 0, 0, 0, 0, amqp_empty_table);
-    amqp_rpc_reply_t queueMgmtDeclareResult = amqp_get_rpc_reply(conn);
-    if (queueMgmtDeclareResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_queue_declare error");
-    }
 
-    amqp_queue_declare(conn, 2, amqp_cstring_bytes("queue_analytics_finish"), 0, 0, 0, 0, amqp_empty_table);
-    amqp_rpc_reply_t queueAnalyticsFinishDeclareResult = amqp_get_rpc_reply(conn);
-    if (queueAnalyticsFinishDeclareResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_queue_declare finish error");
-    }
-    amqp_queue_declare(conn, 2, amqp_cstring_bytes("queue_management_finish"), 0, 0, 0, 0, amqp_empty_table);
-    amqp_rpc_reply_t queueManagementFinishDeclareResult = amqp_get_rpc_reply(conn);
-    if (queueManagementFinishDeclareResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_queue_declare finish error");
-    }
-
-    amqpConnections_.insert({"main", AmqpConnection{.connection = conn, .channel = 1}});
-    amqpConnections_.insert({"finish", AmqpConnection{.connection = conn, .channel = 2}});
+    amqpConnections_.insert({"postprocessor", AmqpConnection{.connection = conn, .channel = 1}});
 }
 
 void RabbitMQSubsystem::uninitialize()
