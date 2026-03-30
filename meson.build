@@ -18,6 +18,7 @@ poco_data_postgresql = cpp.find_library('PocoDataPostgreSQL', required: false)
 poco_util = cpp.find_library('PocoUtil', required: true)
 aws_core = cpp.find_library('aws-cpp-sdk-core', required: true)
 aws_s3 = cpp.find_library('aws-cpp-sdk-s3', required: true)
+rabbitmq = cpp.find_library('rabbitmq', required: true)
 
 inc = include_directories('lib')
 sources = files(
@@ -26,6 +27,7 @@ sources = files(
   'lib/rgt/devkit/subsystems/RedisSubsystem.cpp',
   'lib/rgt/devkit/subsystems/PsqlSubsystem.cpp',
   'lib/rgt/devkit/subsystems/S3Subsystem.cpp',
+  'lib/rgt/devkit/subsystems/RabbitMQSubsystem.cpp',
 )
 
 all_deps = [
@@ -39,7 +41,8 @@ all_deps = [
   poco_data_postgresql,
   poco_util,
   aws_core,
-  aws_s3
+  aws_s3,
+  rabbitmq
 ]
 
 devkit_lib = shared_library('devkit', sources,
