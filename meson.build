@@ -19,11 +19,13 @@ poco_util = cpp.find_library('PocoUtil', required: true)
 aws_core = cpp.find_library('aws-cpp-sdk-core', required: true)
 aws_s3 = cpp.find_library('aws-cpp-sdk-s3', required: true)
 rabbitmq = cpp.find_library('rabbitmq', required: true)
+simpleamqpclient = cpp.find_library('SimpleAmqpClient', required: true)
 
 inc = include_directories('lib')
 sources = files(
   'lib/rgt/devkit/General.cpp',
   'lib/rgt/devkit/HTTPRequestHandler.cpp',
+#'lib/rgt/devkit/AMQPWrappers.cpp',
   'lib/rgt/devkit/subsystems/RedisSubsystem.cpp',
   'lib/rgt/devkit/subsystems/PsqlSubsystem.cpp',
   'lib/rgt/devkit/subsystems/S3Subsystem.cpp',
@@ -42,7 +44,8 @@ all_deps = [
   poco_util,
   aws_core,
   aws_s3,
-  rabbitmq
+  rabbitmq,
+  simpleamqpclient
 ]
 
 devkit_lib = shared_library('devkit', sources,

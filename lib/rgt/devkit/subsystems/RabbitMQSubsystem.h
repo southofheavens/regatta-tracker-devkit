@@ -4,7 +4,7 @@
 #include <Poco/Util/Subsystem.h>
 #include <Poco/Util/Application.h>
 
-#include <rabbitmq-c/amqp.h>
+#include <SimpleAmqpClient/Channel.h>
 
 namespace RGT::Devkit::Subsystems
 {
@@ -14,12 +14,7 @@ class RabbitMQSubsystem : public Poco::Util::Subsystem
 public:
     virtual const char * name() const final;
 
-    struct AmqpConnection
-    {
-        amqp_connection_state_t connection;
-        amqp_channel_t          channel;
-    };
-    AmqpConnection & getAmqpConnection(const std::string & connectionId);
+    AmqpClient::Channel & getChannel();
 
 private:
     virtual void initialize(Poco::Util::Application & app) final;
@@ -27,7 +22,7 @@ private:
 	virtual void uninitialize() final;
 
 private:
-    std::map<std::string, AmqpConnection> amqpConnections_;
+    AmqpClient::Channel::ptr_t amqpChannel_;
 };
 
 } // namespace RGT::Devkit::Subsystems

@@ -1,6 +1,7 @@
 #include <rgt/devkit/subsystems/RabbitMQSubsystem.h>
 
 #include <rgt/devkit/General.h>
+#include <rgt/devkit/AMQPWrappers.h>
 
 #include <rabbitmq-c/tcp_socket.h>
 
@@ -10,17 +11,8 @@ namespace RGT::Devkit::Subsystems
 const char * RabbitMQSubsystem::name() const
 { return "RabbitMQSubsystem"; }
 
-RabbitMQSubsystem::AmqpConnection & RabbitMQSubsystem::getAmqpConnection(const std::string & connectionId)
-{
-    try {
-        return amqpConnections_.at(connectionId);
-    }
-    catch (const std::exception & e) 
-    {
-        throw std::runtime_error(std::format("Error while calling method "
-            "RabbitMQSubsystem::getAmqpConnection: {}", e.what()));
-    }
-}
+AmqpClient::Channel & RabbitMQSubsystem::getChannel()
+{ return *amqpChannel_; }
 
 void RabbitMQSubsystem::initialize(Poco::Util::Application & app) 
 {
@@ -64,36 +56,11 @@ void RabbitMQSubsystem::initialize(Poco::Util::Application & app)
     // лучше это вынести в конфиг, но чтобы отобразить всевозможные настройки в конфиге,
     // уйдёт куча времени. я позволю себе сделать хардкод, но это очень ужасно и так делать не надо
 
-    amqp_connection_state_t conn = amqp_new_connection();
-    if (conn == nullptr) {
-        throw std::runtime_error("amqp_connection_state initialize error");
-    }
-    amqp_socket_t * socket = amqp_tcp_socket_new(conn);
-    if (socket == nullptr) {
-        throw std::runtime_error("amqp_socket initialize error");
-    }
-    int socketOpenResult = amqp_socket_open(socket, host->c_str(), port);
-    if (socketOpenResult != AMQP_STATUS_OK) {
-        throw std::runtime_error("amqp_socket_open error");
-    }
-    amqp_rpc_reply_t amqpLoginResult = amqp_login(conn, vhost.c_str(), AMQP_DEFAULT_MAX_CHANNELS, 
-        AMQP_DEFAULT_FRAME_SIZE, 0, AMQP_SASL_METHOD_PLAIN, username->c_str(), password->c_str());
-    if (amqpLoginResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_login error");
-    }
-    amqp_channel_open(conn, (amqp_channel_t)1);
-    amqp_rpc_reply_t amqpChannelOpenResult = amqp_get_rpc_reply(conn);
-    if (amqpChannelOpenResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_channel_open error");
-    }
+    amqpChannel_ = AmqpClient::Channel::Create(*host, port, *username, *password, vhost);
 
-    amqp_queue_declare(conn, 1, amqp_cstring_bytes("postprocessor_tasks"), 0, 0, 0, 0, amqp_empty_table);
-    amqp_rpc_reply_t queueAnalyticsDeclareResult = amqp_get_rpc_reply(conn);
-    if (queueAnalyticsDeclareResult.reply_type != AMQP_RESPONSE_NORMAL) {
-        throw std::runtime_error("amqp_queue_declare error");
-    }
-
-    amqpConnections_.insert({"postprocessor", AmqpConnection{.connection = conn, .channel = 1}});
+    amqpChannel_->DeclareQueue("postprocessor_tasks", false, true, false, false);
+    amqpChannel_->DeclareQueue("analytics_tasks", false, true, false, false);
+    amqpChannel_->DeclareQueue("notifier_tasks", false, true, false, false);
 }
 
 void RabbitMQSubsystem::uninitialize()
