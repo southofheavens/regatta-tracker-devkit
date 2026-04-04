@@ -1,5 +1,4 @@
-#ifndef __JWTPAYLOAD_H__
-#define __JWTPAYLOAD_H__
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -17,5 +16,3 @@ struct JWTPayload
 };
 
 } // namespace RGT::Devkit
-
-#endif // __JWTPAYLOAD_H__

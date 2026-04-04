@@ -1,5 +1,4 @@
-#ifndef __RGTEXCEPTION_H__
-#define __RGTEXCEPTION_H__
+#pragma once
 
 #include <exception>
 #include <string>
@@ -36,5 +35,3 @@ private:
 };
 
 } // namespace RGT::Devkit
-
-#endif // __RGTEXCEPTION_H__

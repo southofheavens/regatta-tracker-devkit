@@ -1,5 +1,4 @@
-// #ifndef __AMQP_WRAPPERS_H__
-// #define __AMQP_WRAPPERS_H__
+// #pragma once
 
 // #include <rabbitmq-c/tcp_socket.h>
 // #include <rabbitmq-c/amqp.h>
@@ -97,5 +96,3 @@
 // };
 
 // } // namespace RGT::Devkit
-
-// #endif // __AMQP_WRAPPERS_H__

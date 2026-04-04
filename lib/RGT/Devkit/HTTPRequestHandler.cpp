@@ -1,5 +1,5 @@
-#include <rgt/devkit/HTTPRequestHandler.h>
-#include <rgt/devkit/General.h>
+#include <RGT/Devkit/HTTPRequestHandler.h>
+#include <RGT/Devkit/General.h>
 
 #include <Poco/JWT/Token.h>
 #include <Poco/JWT/Serializer.h>
@@ -98,7 +98,7 @@ void accessTokenValidate(const std::string & token)
     }
     catch (...) {
         throw RGT::Devkit::RGTException("Received token have invalid signature",
-            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+            Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED);
     }
 
     Poco::Timestamp expires = decoded.getExpiration();
@@ -106,7 +106,7 @@ void accessTokenValidate(const std::string & token)
     
     if (expires < now) {
         throw RGT::Devkit::RGTException("Received token is expired or does not contain 'exp' field",
-            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);    
+            Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED);    
     }
 }
 

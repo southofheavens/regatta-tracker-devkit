@@ -1,23 +1,49 @@
-#include <rgt/devkit/subsystems/RabbitMQSubsystem.h>
+#include <RGT/Devkit/Connections/RabbitMQ.h>
+#include <RGT/Devkit/General.h>
 
-#include <rgt/devkit/General.h>
-#include <rgt/devkit/AMQPWrappers.h>
+#include <Poco/Util/AbstractConfiguration.h>
 
-#include <rabbitmq-c/tcp_socket.h>
-
-namespace RGT::Devkit::Subsystems
+namespace RGT::Devkit::Connections
 {
 
-const char * RabbitMQSubsystem::name() const
-{ return "RabbitMQSubsystem"; }
-
-AmqpClient::Channel & RabbitMQSubsystem::getChannel()
-{ return *amqpChannel_; }
-
-void RabbitMQSubsystem::initialize(Poco::Util::Application & app) 
+AmqpClient::Channel::ptr_t connectToRabbitMQ
+(
+    const std::string & host,
+    const uint16_t      port,
+    const std::string & username,
+    const std::string & password, 
+    const std::string & vhost
+)
 {
-    Poco::Util::LayeredConfiguration & cfg = app.config();
+    AmqpClient::Channel::OpenOpts opts;
+    opts.host = host;
+    opts.port = port;
+    opts.auth = AmqpClient::Channel::OpenOpts::BasicAuth(username, password);
+    opts.vhost = vhost;
 
+    AmqpClient::Channel::ptr_t channel;
+    try {
+        channel = AmqpClient::Channel::Open(opts);
+    }
+    catch (const std::exception & e) 
+    {
+        throw std::runtime_error(std::format("error while opening rabbitmq channel with host = {}, port = {}",
+            host, port));
+    }
+
+    // TODO убрать хардкод
+    channel->DeclareQueue("postprocessor_tasks", false, true, false, false);
+    channel->DeclareQueue("analytics_tasks", false, true, false, false);
+    channel->DeclareQueue("notifier_tasks", false, true, false, false);
+
+    return channel;
+}
+
+AmqpClient::Channel::ptr_t connectToRabbitMQ
+(
+    const Poco::Util::AbstractConfiguration & cfg
+)
+{
     std::optional<std::string> host = Devkit::getEnvOrCfg("RABBITMQ_HOST", "rabbitmq.host", cfg);
     if (not host.has_value()) {
         throw std::runtime_error("The host must be specified via environment variable or config");
@@ -53,18 +79,7 @@ void RabbitMQSubsystem::initialize(Poco::Util::Application & app)
         throw std::runtime_error("The password must be specified via environment variable");
     }
 
-    // лучше это вынести в конфиг, но чтобы отобразить всевозможные настройки в конфиге,
-    // уйдёт куча времени. я позволю себе сделать хардкод, но это очень ужасно и так делать не надо
-
-    amqpChannel_ = AmqpClient::Channel::Create(*host, port, *username, *password, vhost);
-
-    amqpChannel_->DeclareQueue("postprocessor_tasks", false, true, false, false);
-    amqpChannel_->DeclareQueue("analytics_tasks", false, true, false, false);
-    amqpChannel_->DeclareQueue("notifier_tasks", false, true, false, false);
+    return connectToRabbitMQ(*host, port, *username, *password, vhost);
 }
 
-void RabbitMQSubsystem::uninitialize()
-{
-}
-
-} // namespace RGT::Devkit::Subsystems
+} // namespace RGT::Devkit::Connections

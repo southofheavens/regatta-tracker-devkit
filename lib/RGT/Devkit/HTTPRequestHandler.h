@@ -1,8 +1,7 @@
-#ifndef __HTTP_REQUEST_HANDLER_H__
-#define __HTTP_REQUEST_HANDLER_H__
+#pragma once
 
-#include <rgt/devkit/RGTException.h>
-#include <rgt/devkit/JWTPayload.h>
+#include <RGT/Devkit/RGTException.h>
+#include <RGT/Devkit/JWTPayload.h>
 
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerResponse.h>
@@ -160,5 +159,3 @@ protected:
 };
 
 } // namespace RGT::Devkit
-
-#endif // __HTTP_REQUEST_HANDLER_H__

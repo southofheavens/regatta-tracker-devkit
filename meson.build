@@ -23,13 +23,16 @@ simpleamqpclient = cpp.find_library('SimpleAmqpClient', required: true)
 
 inc = include_directories('lib')
 sources = files(
-  'lib/rgt/devkit/General.cpp',
-  'lib/rgt/devkit/HTTPRequestHandler.cpp',
-#'lib/rgt/devkit/AMQPWrappers.cpp',
-  'lib/rgt/devkit/subsystems/RedisSubsystem.cpp',
-  'lib/rgt/devkit/subsystems/PsqlSubsystem.cpp',
-  'lib/rgt/devkit/subsystems/S3Subsystem.cpp',
-  'lib/rgt/devkit/subsystems/RabbitMQSubsystem.cpp',
+  'lib/RGT/Devkit/General.cpp',
+  'lib/RGT/Devkit/HTTPRequestHandler.cpp',
+  'lib/RGT/Devkit/subsystems/RedisSubsystem.cpp',
+  'lib/RGT/Devkit/subsystems/PsqlSubsystem.cpp',
+  'lib/RGT/Devkit/subsystems/S3Subsystem.cpp',
+  'lib/RGT/Devkit/subsystems/RabbitMQSubsystem.cpp',
+  'lib/RGT/Devkit/connections/PostgreSQL.cpp',
+  'lib/RGT/Devkit/connections/RabbitMQ.cpp',
+  'lib/RGT/Devkit/connections/Redis.cpp',
+  'lib/RGT/Devkit/connections/S3.cpp',
 )
 
 all_deps = [

@@ -1,5 +1,4 @@
-#ifndef __RABBITMQ_SUBSYSTEM_H__
-#define __RABBITMQ_SUBSYSTEM_H__
+#pragma once
 
 #include <Poco/Util/Subsystem.h>
 #include <Poco/Util/Application.h>
@@ -26,5 +25,3 @@ private:
 };
 
 } // namespace RGT::Devkit::Subsystems
-
-#endif // __RABBITMQ_SUBSYSTEM_H__

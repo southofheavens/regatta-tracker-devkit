@@ -1,10 +1,10 @@
-#include <rgt/devkit/General.h>
-#include <rgt/devkit/RGTException.h>
+#include <RGT/Devkit/General.h>
+#include <RGT/Devkit/RGTException.h>
 
 #include <fstream>
 #include <format>
 
-#include <Poco/Util/LayeredConfiguration.h>
+#include <Poco/Util/AbstractConfiguration.h>
 
 namespace
 {
@@ -149,7 +149,7 @@ std::optional<std::string> getEnv(const std::string & envVarName)
 }
 
 std::optional<std::string> getEnvOrCfg(const std::string & envVarName, const std::string & cfgVarName,
-    const Poco::Util::LayeredConfiguration & cfg)
+    const Poco::Util::AbstractConfiguration & cfg)
 {
     std::optional<std::string> env = getEnv(envVarName);
 

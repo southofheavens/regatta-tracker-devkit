@@ -1,10 +1,9 @@
-#ifndef __GENERAL_H__
-#define __GENERAL_H__
+#pragma once
 
 #include <string>
 #include <optional>
 
-namespace Poco::Util { class LayeredConfiguration; } // namespace Poco::Util
+namespace Poco::Util { class AbstractConfiguration; } // namespace Poco::Util
 
 namespace RGT::Devkit
 {
@@ -20,9 +19,6 @@ void readDotEnv();
 std::optional<std::string> getEnv(const std::string & envVarName);
 
 std::optional<std::string> getEnvOrCfg(const std::string & envVarName, const std::string & cfgVarName,
-    const Poco::Util::LayeredConfiguration & cfg);
+    const Poco::Util::AbstractConfiguration & cfg);
 
 } // namespace RGT::Devkit
-
-#endif // __GENERAL_H__
-
