@@ -25,14 +25,14 @@ inc = include_directories('lib')
 sources = files(
   'lib/RGT/Devkit/General.cpp',
   'lib/RGT/Devkit/HTTPRequestHandler.cpp',
-  'lib/RGT/Devkit/subsystems/RedisSubsystem.cpp',
-  'lib/RGT/Devkit/subsystems/PsqlSubsystem.cpp',
-  'lib/RGT/Devkit/subsystems/S3Subsystem.cpp',
-  'lib/RGT/Devkit/subsystems/RabbitMQSubsystem.cpp',
-  'lib/RGT/Devkit/connections/PostgreSQL.cpp',
-  'lib/RGT/Devkit/connections/RabbitMQ.cpp',
-  'lib/RGT/Devkit/connections/Redis.cpp',
-  'lib/RGT/Devkit/connections/S3.cpp',
+  'lib/RGT/Devkit/Subsystems/RedisSubsystem.cpp',
+  'lib/RGT/Devkit/Subsystems/PsqlSubsystem.cpp',
+  'lib/RGT/Devkit/Subsystems/S3Subsystem.cpp',
+  'lib/RGT/Devkit/Subsystems/RabbitMQSubsystem.cpp',
+  'lib/RGT/Devkit/Connections/PostgreSQL.cpp',
+  'lib/RGT/Devkit/Connections/RabbitMQ.cpp',
+  'lib/RGT/Devkit/Connections/Redis.cpp',
+  'lib/RGT/Devkit/Connections/S3.cpp',
 )
 
 all_deps = [
