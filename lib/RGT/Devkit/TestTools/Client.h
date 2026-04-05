@@ -16,7 +16,7 @@ namespace RGT::Devkit::TestTools
 
 const std::string default_password    = "default_password1";
 const std::string default_fingerprint = "default_fingerprint";
-const std::string deafult_user_agent  = "default_user_agent";
+const std::string default_user_agent  = "default_user_agent";
 
 enum class Role : uint8_t { Participant, Judge };
 
@@ -43,7 +43,7 @@ public:
         Poco::Net::HTTPRequest request;
 
         request.set("X-Fingerprint", default_fingerprint);
-        request.set("User-Agent", deafult_user_agent);
+        request.set("User-Agent", default_user_agent);
         request.setCredentials("Bearer", accessToken_);
     }
 
@@ -56,7 +56,7 @@ public:
         // Устанавливаем заголовки
         request.setContentType("application/json");
         request.set("X-Fingerprint", default_fingerprint);
-        request.set("User-Agent", deafult_user_agent);
+        request.set("User-Agent", default_user_agent);
 
         // Формируем тело запроса
         Poco::JSON::Object::Ptr jsonBody(new Poco::JSON::Object);
@@ -154,7 +154,7 @@ private:
         // Устанавливаем заголовки
         request.setContentType("application/json");
         request.set("X-Fingerprint", default_fingerprint);
-        request.set("User-Agent", deafult_user_agent);
+        request.set("User-Agent", default_user_agent);
 
         // Формируем тело запроса
         Poco::JSON::Object::Ptr jsonBody(new Poco::JSON::Object);
