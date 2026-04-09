@@ -6,6 +6,7 @@
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/JSON/Object.h>
+#include <Poco/StreamCopier.h>
 #include <Poco/JSON/Parser.h>
 
 #include <RGT/Devkit/TestTools/General.h>
@@ -14,7 +15,7 @@
 namespace RGT::Devkit::TestTools
 {
 
-const std::string default_password    = "default_password1";
+const std::string default_password    = "default_passworD1";
 const std::string default_fingerprint = "default_fingerprint";
 const std::string default_user_agent  = "default_user_agent";
 
@@ -131,10 +132,14 @@ private:
         
         // Получаем ответ
         Poco::Net::HTTPResponse response;
+        std::istream & is = session.receiveResponse(response);
+        std::string stringResponse;
+    Poco::StreamCopier::copyToString(is, stringResponse);
+    std::cout << stringResponse
+    << std::endl;
         if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_CREATED) {
             throw std::runtime_error("user not created");
         }
-        std::istream & is = session.receiveResponse(response);
 
         Poco::JSON::Parser parser;
         Poco::JSON::Object::Ptr result = parser.parse(is).extract<Poco::JSON::Object::Ptr>();
@@ -178,10 +183,10 @@ private:
         
         // Получаем ответ
         Poco::Net::HTTPResponse response;
+        std::istream & is = session.receiveResponse(response);
         if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK) {
             throw std::runtime_error("user could not login");
         }
-        std::istream & is = session.receiveResponse(response);
 
         Poco::JSON::Parser parser;
         Poco::JSON::Object::Ptr result = parser.parse(is).extract<Poco::JSON::Object::Ptr>();
