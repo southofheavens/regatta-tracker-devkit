@@ -5,6 +5,7 @@
 #include <RGT/Devkit/Connections/S3.h>
 #include <RGT/Devkit/Connections/RabbitMQ.h>
 #include <RGT/Devkit/General.h>
+#include <RGT/Devkit/ProjectName.h>
 
 #include <SimpleAmqpClient/Channel.h>
 
@@ -46,7 +47,7 @@ public:
 private:
     ConnectionRegistry()
     {
-        cfg_ = new Poco::Util::JSONConfiguration("tests/rgt-tests.config");
+        cfg_ = new Poco::Util::JSONConfiguration(RGT::Devkit::getProjectName());
 
         Poco::Data::PostgreSQL::Connector::registerConnector();
         Aws::InitAPI(sdkOptions_);

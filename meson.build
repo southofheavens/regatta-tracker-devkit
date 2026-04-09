@@ -54,7 +54,7 @@ all_deps = [
 devkit_lib = shared_library('devkit', sources,
   include_directories: inc,
   dependencies: all_deps,
-  cpp_args: ['-DENABLE_TRACING=0']
+  cpp_args: ['-DENABLE_TRACING=0', '-DPROJECT_NAME="rgt-devkit"']
 )
 
 devkit_dep = declare_dependency(
