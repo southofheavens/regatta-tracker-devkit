@@ -135,7 +135,6 @@ private:
         // Получаем ответ
         Poco::Net::HTTPResponse response;
         std::istream & is = session.receiveResponse(response);
-        std::cout << response.getStatus() << '\n';
         if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_CREATED) {
             throw std::runtime_error("user not created");
         }
