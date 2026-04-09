@@ -96,6 +96,9 @@ public:
         }
     }
 
+    uint64_t getId() const 
+    { return id_; }
+
 private:
     // Выполняется один раз в конструкторе
     void signUp(const std::string & name, const std::string & surname, const std::string & login, const Role role)
@@ -194,9 +197,6 @@ private:
             throw std::runtime_error("cant extract tokens from response");
         }
     }
-
-    // uint64_t getId() const { return id_; }
-    // void setId(uint64_t id) { id_ = id; }
 
     // const std::string & getName() const { return name_; }
     // void setName(const std::string & name) { name_ = name; }
