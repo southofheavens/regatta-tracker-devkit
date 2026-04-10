@@ -47,7 +47,7 @@ public:
 private:
     ConnectionRegistry()
     {
-        cfg_ = new Poco::Util::JSONConfiguration(RGT::Devkit::getProjectName());
+        cfg_ = new Poco::Util::JSONConfiguration(RGT::Devkit::getConfigPath());
 
         Poco::Data::PostgreSQL::Connector::registerConnector();
         Aws::InitAPI(sdkOptions_);
