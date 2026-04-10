@@ -6,7 +6,7 @@ namespace RGT::Devkit
 {
 
 #ifndef PROJECT_NAME
-    #error A PROJECT_NAME variablie must been defined
+    #error A PROJECT_NAME variable must been defined
 #else
 
 inline const char * getProjectName()
