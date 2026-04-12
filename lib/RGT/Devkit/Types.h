@@ -8,7 +8,7 @@ namespace RGT::Devkit
 
 enum class UserRole : uint8_t { Participant, Judge };
 
-UserRole mapStringToUserRole(const std::string & userRole)
+inline UserRole mapStringToUserRole(const std::string & userRole)
 {
     if (userRole == "Participant") {
         return UserRole::Participant;
@@ -19,7 +19,7 @@ UserRole mapStringToUserRole(const std::string & userRole)
     throw std::runtime_error("mapStringToUserRole: unsupported string user role");
 }
 
-std::string mapUserRoleToString(const UserRole userRole)
+inline std::string mapUserRoleToString(const UserRole userRole)
 {
     switch (userRole)
     {
@@ -36,7 +36,7 @@ std::string mapUserRoleToString(const UserRole userRole)
 
 enum class RaceStatus : uint8_t { NotStarted, InProgress, Finished };
 
-RaceStatus mapStringToRaceStatus(const std::string & raceStatus)
+inline RaceStatus mapStringToRaceStatus(const std::string & raceStatus)
 {
     if (raceStatus == "not_started") {
         return RaceStatus::NotStarted;
@@ -50,7 +50,7 @@ RaceStatus mapStringToRaceStatus(const std::string & raceStatus)
     throw std::runtime_error("mapStringToRaceStatus: unsupported string race status");
 }
 
-std::string mapRaceStatusToString(const RaceStatus raceStatus)
+inline std::string mapRaceStatusToString(const RaceStatus raceStatus)
 {
     switch (raceStatus)
     {
@@ -69,20 +69,20 @@ std::string mapRaceStatusToString(const RaceStatus raceStatus)
 
 enum class UserId : uint64_t {};
 
-UserId mapUintToUserId(const uint64_t userId)
+inline UserId mapUintToUserId(const uint64_t userId)
 { return static_cast<UserId>(userId); }
 
-uint64_t mapUserIdToUint(const UserId userId)
+inline uint64_t mapUserIdToUint(const UserId userId)
 { return static_cast<uint64_t>(userId); }
 
 /* - */
 
 enum class RaceId : uint64_t {};
 
-RaceId mapUintToRaceId(const uint64_t raceId)
+inline RaceId mapUintToRaceId(const uint64_t raceId)
 { return static_cast<RaceId>(raceId); }
 
-uint64_t mapRaceIdToUint(const RaceId raceId)
+inline uint64_t mapRaceIdToUint(const RaceId raceId)
 { return static_cast<uint64_t>(raceId); }
 
 } // namespace RGT::Devkit
