@@ -5,7 +5,7 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/JSON/Object.h>
 
-namespace RGT::Auth::Handlers
+namespace RGT::Devkit
 {
 
 class ErrorHandler : public Poco::Net::HTTPRequestHandler
@@ -23,4 +23,4 @@ private:
     }
 };
 
-} // namespace RGT::Auth::Handlers
+} // namespace RGT::Devkit
