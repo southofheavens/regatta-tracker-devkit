@@ -7,8 +7,6 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/JSON/Object.h>
 
-#include <any>
-
 namespace RGT::Devkit
 {
 
@@ -17,12 +15,17 @@ namespace RGT::Devkit
 /// 1. Препроцессинг;
 /// 2. Извлечение данных, необходимых для обработки запроса;
 /// 3. Обработка запроса.
+///
 /// Для этого в классе предусмотрено 3 чисто-виртуальных метода, которые необходимо переопределить:
-/// requestPreprocessing: предобработка запроса. Проверяется тип контента, размер контента и т.д.;
-/// extractPayloadFromRequest: извлекает из запроса необходимые данные и возвращает их в виде структуры,
-/// которую необходимо определить в классе-наследнике. Возвращаемое значение функции присваивается
-/// переменной-члену класса payload_;
-/// requestProcessing: обработка запроса с применением payload_.
+///
+/// 1. requestPreprocessing: предобработка запроса. Проверяется тип контента, размер контента и т.д.;
+///
+/// 2. extractPayloadFromRequest: извлекает из запроса необходимые данные. В классе-наследнике необходимо
+/// определить поля-члены, куда будут сохраняться извлекаемые данные. Например так:
+/// struct { int a; int b; int c; } payload_;,
+/// внутри метода: payload_.a = ..., payload_.b = ..., payload_.c = ...
+///
+/// 3. requestProcessing: обработка запроса с применением payload_.
 class HTTPRequestHandler : public Poco::Net::HTTPRequestHandler
 {
 private:
@@ -30,7 +33,7 @@ private:
     try
     {
         requestPreprocessing(request);
-        payload_ = extractPayloadFromRequest(request);
+        extractPayloadFromRequest(request);
         requestProcessing(request, response);
     }
     catch (const RGT::Devkit::RGTException & e)
@@ -47,14 +50,10 @@ private:
 protected:
     virtual void requestPreprocessing(Poco::Net::HTTPServerRequest & request) = 0;
 
-    virtual std::any extractPayloadFromRequest(Poco::Net::HTTPServerRequest & request) = 0;
+    virtual void extractPayloadFromRequest(Poco::Net::HTTPServerRequest & request) = 0;
 
     virtual void requestProcessing(Poco::Net::HTTPServerRequest & request, Poco::Net::HTTPServerResponse & response) = 0;
 
-protected:
-    std::any payload_;
-
-protected:
     /// Большинство из этих статических методов по сути своей являются обёртками над функциями/методами
     /// из Poco. Мои обертки выбрасывают RGTException, который содержит текст и код ответа HTTP,
     /// которые, в свою очередь, мы можем отправить клиенту, чтобы он узнал причину,
