@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 namespace RGT::Devkit
 {
