@@ -3,13 +3,23 @@
 #include <cstdint>
 #include <string>
 #include <stdexcept>
+#include <string_view>
+#include <array>
 
 namespace RGT::Devkit
 {
 
 enum class UserRole : uint8_t { Participant, Judge };
 
-inline UserRole mapStringToUserRole(const std::string & userRole)
+constexpr uint8_t number_of_user_roles = 2;
+
+constexpr std::array<std::string_view, number_of_user_roles> userRoles = 
+{
+    std::string_view("Participant"),
+    std::string_view("Judge")
+};
+
+[[nodiscard]] constexpr UserRole mapStringToUserRole(const std::string_view userRole)
 {
     if (userRole == "Participant") {
         return UserRole::Participant;
@@ -20,14 +30,14 @@ inline UserRole mapStringToUserRole(const std::string & userRole)
     throw std::runtime_error("mapStringToUserRole: unsupported string user role");
 }
 
-inline std::string mapUserRoleToString(const UserRole userRole)
+[[nodiscard]] constexpr std::string_view mapUserRoleToString(const UserRole userRole)
 {
     switch (userRole)
     {
-        case UserRole::Participant:
-            return "Participant";
+        case UserRole::Participant: 
+            return userRoles[0];
         case UserRole::Judge:
-            return "Judge";
+            return userRoles[1];
         default:
             throw std::runtime_error("mapUserRoleToString: unsupported enum user role");
     }
@@ -37,7 +47,16 @@ inline std::string mapUserRoleToString(const UserRole userRole)
 
 enum class RaceStatus : uint8_t { NotStarted, InProgress, Finished };
 
-inline RaceStatus mapStringToRaceStatus(const std::string & raceStatus)
+constexpr uint8_t number_of_race_statuses = 3;
+
+constexpr std::array<std::string_view, number_of_race_statuses> raceStatuses = 
+{
+    std::string_view("not_started"),
+    std::string_view("in_progress"),
+    std::string_view("finished")
+};
+
+[[nodiscard]] constexpr RaceStatus mapStringToRaceStatus(const std::string_view raceStatus)
 {
     if (raceStatus == "not_started") {
         return RaceStatus::NotStarted;
@@ -51,16 +70,16 @@ inline RaceStatus mapStringToRaceStatus(const std::string & raceStatus)
     throw std::runtime_error("mapStringToRaceStatus: unsupported string race status");
 }
 
-inline std::string mapRaceStatusToString(const RaceStatus raceStatus)
+[[nodiscard]] constexpr std::string_view mapRaceStatusToString(const RaceStatus raceStatus)
 {
     switch (raceStatus)
     {
         case RaceStatus::NotStarted:
-            return "not_started";
+            return raceStatuses[0];
         case RaceStatus::InProgress:
-            return "in_progress";
+            return raceStatuses[1];
         case RaceStatus::Finished:
-            return "finished";
+            return raceStatuses[2];
         default:
             throw std::runtime_error("mapRaceStatusToString: unsupported enum race status");
     }
@@ -70,20 +89,20 @@ inline std::string mapRaceStatusToString(const RaceStatus raceStatus)
 
 enum class UserId : uint64_t {};
 
-inline UserId mapUintToUserId(const uint64_t userId)
+[[nodiscard]] constexpr UserId mapUintToUserId(const uint64_t userId)
 { return static_cast<UserId>(userId); }
 
-inline uint64_t mapUserIdToUint(const UserId userId)
+[[nodiscard]] constexpr uint64_t mapUserIdToUint(const UserId userId)
 { return static_cast<uint64_t>(userId); }
 
 /* - */
 
 enum class RaceId : uint64_t {};
 
-inline RaceId mapUintToRaceId(const uint64_t raceId)
+[[nodiscard]] constexpr RaceId mapUintToRaceId(const uint64_t raceId)
 { return static_cast<RaceId>(raceId); }
 
-inline uint64_t mapRaceIdToUint(const RaceId raceId)
+[[nodiscard]] constexpr uint64_t mapRaceIdToUint(const RaceId raceId)
 { return static_cast<uint64_t>(raceId); }
 
 } // namespace RGT::Devkit
