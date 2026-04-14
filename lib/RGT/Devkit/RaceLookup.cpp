@@ -78,16 +78,16 @@ bool isRaceExists(Poco::Data::Session & session, Poco::Redis::PooledConnection &
 {
     // Сначала смотрим в Redis
 
-    Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
-    if (redisClient == nullptr) 
-    {
-        // TODO лог
-        throw std::exception{};
-    }
-    std::optional<bool> redisLookupResult = isRaceExistsRedis(redisClient, raceId);
-    if (redisLookupResult.has_value()) {
-        return *redisLookupResult;
-    }
+    // Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
+    // if (redisClient == nullptr) 
+    // {
+    //     // TODO лог
+    //     throw std::exception{};
+    // }
+    // std::optional<bool> redisLookupResult = isRaceExistsRedis(redisClient, raceId);
+    // if (redisLookupResult.has_value()) {
+    //     return *redisLookupResult;
+    // }
 
     // В Redis ничего не оказалось, поэтому ищем в БД и кэшируем в Redis
 
@@ -102,16 +102,16 @@ bool isRaceExists(Poco::Data::Session & session, Poco::Redis::PooledConnection &
         Poco::Data::Keywords::into(exists),
         Poco::Data::Keywords::now;
 
-    redisClient->execute<std::string>
-    (
-        Poco::Redis::Command::set
-        (
-            std::format("is_race_exists:{}", Devkit::mapRaceIdToUint(raceId)),
-            exists ? 1 : 0,
-            true,
-            Poco::Timespan(default_ttl.count(), 0)
-        )
-    );
+    // redisClient->execute<std::string>
+    // (
+    //     Poco::Redis::Command::set
+    //     (
+    //         std::format("is_race_exists:{}", Devkit::mapRaceIdToUint(raceId)),
+    //         exists ? 1 : 0,
+    //         true,
+    //         Poco::Timespan(default_ttl.count(), 0)
+    //     )
+    // );
 
     return exists;
 }
@@ -140,16 +140,16 @@ bool isParticipationExists(Poco::Data::Session & session, Poco::Redis::PooledCon
 {
     // Сначала смотрим в Redis
 
-    Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
-    if (redisClient == nullptr) 
-    {
-        // TODO лог
-        throw std::exception{};
-    }
-    std::optional<bool> redisLookupResult = isParticipationExistsRedis(redisClient, raceId, userId);
-    if (redisLookupResult.has_value()) {
-        return *redisLookupResult;
-    }
+    // Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
+    // if (redisClient == nullptr) 
+    // {
+    //     // TODO лог
+    //     throw std::exception{};
+    // }
+    // std::optional<bool> redisLookupResult = isParticipationExistsRedis(redisClient, raceId, userId);
+    // if (redisLookupResult.has_value()) {
+    //     return *redisLookupResult;
+    // }
 
     // В Redis ничего не оказалось, поэтому ищем в БД и кэшируем в Redis
 
@@ -165,21 +165,21 @@ bool isParticipationExists(Poco::Data::Session & session, Poco::Redis::PooledCon
         Poco::Data::Keywords::into(exists),
         Poco::Data::Keywords::now;
 
-    redisClient->execute<std::string>
-    (
-        Poco::Redis::Command::set
-        (
-            std::format
-            (
-                "p:r{}:u{}",
-                RGT::Devkit::mapRaceIdToUint(raceId),
-                RGT::Devkit::mapUserIdToUint(userId)
-            ),
-            exists ? 1 : 0,
-            true,
-            Poco::Timespan(default_ttl.count(), 0)
-        )
-    );
+    // redisClient->execute<std::string>
+    // (
+    //     Poco::Redis::Command::set
+    //     (
+    //         std::format
+    //         (
+    //             "p:r{}:u{}",
+    //             RGT::Devkit::mapRaceIdToUint(raceId),
+    //             RGT::Devkit::mapUserIdToUint(userId)
+    //         ),
+    //         exists ? 1 : 0,
+    //         true,
+    //         Poco::Timespan(default_ttl.count(), 0)
+    //     )
+    // );
 
     return exists;
 }
@@ -212,16 +212,16 @@ RaceStatus getRaceStatus(Poco::Data::Session & session, Poco::Redis::PooledConne
 {
     // Сначала смотрим в Redis
 
-    Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
-    if (redisClient == nullptr) 
-    {
-        // TODO лог
-        throw std::exception{};
-    }
-    std::optional<RaceStatus> redisLookupResult = getRaceStatusRedis(redisClient, raceId);
-    if (redisLookupResult.has_value()) {
-        return *redisLookupResult;
-    }
+    // Poco::Redis::Client::Ptr redisClient = static_cast<Poco::Redis::Client::Ptr>(pc);
+    // if (redisClient == nullptr) 
+    // {
+    //     // TODO лог
+    //     throw std::exception{};
+    // }
+    // std::optional<RaceStatus> redisLookupResult = getRaceStatusRedis(redisClient, raceId);
+    // if (redisLookupResult.has_value()) {
+    //     return *redisLookupResult;
+    // }
 
     // В Redis ничего не оказалось, поэтому ищем в БД и кэшируем в Redis
 
@@ -238,16 +238,16 @@ RaceStatus getRaceStatus(Poco::Data::Session & session, Poco::Redis::PooledConne
         throw std::runtime_error(std::format("Race with id {} not exists", RGT::Devkit::mapRaceIdToUint(raceId)));
     }
 
-    redisClient->execute<std::string>
-    (
-        Poco::Redis::Command::set
-        (
-            std::format("race_status:{}", Devkit::mapRaceIdToUint(raceId)),
-            rawRaceStatus,
-            true,
-            Poco::Timespan(default_ttl.count(), 0)
-        )
-    );
+    // redisClient->execute<std::string>
+    // (
+    //     Poco::Redis::Command::set
+    //     (
+    //         std::format("race_status:{}", Devkit::mapRaceIdToUint(raceId)),
+    //         rawRaceStatus,
+    //         true,
+    //         Poco::Timespan(default_ttl.count(), 0)
+    //     )
+    // );
 
     return mapStringToRaceStatus(rawRaceStatus);
 }
