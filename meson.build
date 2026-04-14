@@ -25,6 +25,7 @@ inc = include_directories('lib')
 sources = files(
   'lib/RGT/Devkit/General.cpp',
   'lib/RGT/Devkit/HTTPRequestHandler.cpp',
+  'lib/RGT/Devkit/RaceLookup.cpp',
   'lib/RGT/Devkit/Subsystems/RedisSubsystem.cpp',
   'lib/RGT/Devkit/Subsystems/PsqlSubsystem.cpp',
   'lib/RGT/Devkit/Subsystems/S3Subsystem.cpp',
