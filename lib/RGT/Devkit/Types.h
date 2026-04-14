@@ -15,16 +15,16 @@ constexpr uint8_t number_of_user_roles = 2;
 
 constexpr std::array<std::string_view, number_of_user_roles> userRoles = 
 {
-    std::string_view("Participant"),
-    std::string_view("Judge")
+    std::string_view("participant"),
+    std::string_view("judge")
 };
 
 [[nodiscard]] constexpr UserRole mapStringToUserRole(const std::string_view userRole)
 {
-    if (userRole == "Participant") {
+    if (userRole == "participant") {
         return UserRole::Participant;
     }
-    else if (userRole == "Judge") {
+    else if (userRole == "judge") {
         return UserRole::Judge;
     }
     throw std::runtime_error("mapStringToUserRole: unsupported string user role");

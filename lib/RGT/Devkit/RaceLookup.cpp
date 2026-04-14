@@ -75,7 +75,6 @@ namespace RGT::Devkit
 constexpr std::chrono::seconds default_ttl = std::chrono::seconds(900);
 
 bool isRaceExists(Poco::Data::Session & session, Poco::Redis::PooledConnection & pc, RaceId raceId)
-try
 {
     // Сначала смотрим в Redis
 
@@ -103,7 +102,7 @@ try
         Poco::Data::Keywords::into(exists),
         Poco::Data::Keywords::now;
 
-    redisClient->execute<Poco::Redis::BulkString>
+    redisClient->execute<std::string>
     (
         Poco::Redis::Command::set
         (
@@ -115,11 +114,6 @@ try
     );
 
     return exists;
-}
-catch (Poco::Exception e)
-{
-    std::cerr << "isRaceExists: " << e.displayText() << std::endl;
-    throw;
 }
 
 bool isRaceExists(Poco::Data::SessionPool & sessionPool, Poco::Redis::PooledConnection & pc, RaceId raceId)
@@ -143,7 +137,6 @@ bool isRaceExists(Poco::Data::Session & session, RedisClientObjectPool & redisPo
 
 bool isParticipationExists(Poco::Data::Session & session, Poco::Redis::PooledConnection & pc, 
     RaceId raceId, UserId userId)
-try
 {
     // Сначала смотрим в Redis
 
@@ -172,7 +165,7 @@ try
         Poco::Data::Keywords::into(exists),
         Poco::Data::Keywords::now;
 
-    redisClient->execute<Poco::Redis::BulkString>
+    redisClient->execute<std::string>
     (
         Poco::Redis::Command::set
         (
@@ -189,11 +182,6 @@ try
     );
 
     return exists;
-}
-catch (Poco::Exception e)
-{
-    std::cerr << "isParticipationExists: " << e.displayText() << std::endl;
-    throw;
 }
 
 
@@ -221,7 +209,6 @@ bool isParticipationExists(Poco::Data::Session & session, RedisClientObjectPool 
 
 RaceStatus getRaceStatus(Poco::Data::Session & session, Poco::Redis::PooledConnection & pc, 
     RaceId raceId)
-try
 {
     // Сначала смотрим в Redis
 
@@ -251,7 +238,7 @@ try
         throw std::runtime_error(std::format("Race with id {} not exists", RGT::Devkit::mapRaceIdToUint(raceId)));
     }
 
-    redisClient->execute<Poco::Redis::BulkString>
+    redisClient->execute<std::string>
     (
         Poco::Redis::Command::set
         (
@@ -263,11 +250,6 @@ try
     );
 
     return mapStringToRaceStatus(rawRaceStatus);
-}
-catch (Poco::Exception e)
-{
-    std::cerr << "getRaceStatus: " << e.displayText() << std::endl;
-    throw;
 }
 
 RaceStatus getRaceStatus(Poco::Data::SessionPool & sessionPool, Poco::Redis::PooledConnection & pc,
