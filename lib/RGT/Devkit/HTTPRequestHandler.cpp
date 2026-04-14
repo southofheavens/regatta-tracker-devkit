@@ -181,8 +181,10 @@ RGT::Devkit::JWTPayload HTTPRequestHandler::extractPayload(const std::string & t
         throw RGT::Devkit::RGTException("The token is missing a sub",
             Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
     }
-    try {
-        tokenPayload.sub = std::stoull(sub);
+    try 
+    {
+        uint64_t rawSub = std::stoull(sub);
+        tokenPayload.sub = RGT::Devkit::mapUintToUserId(rawSub);
     }
     catch (...) {
         throw RGT::Devkit::RGTException("Sub must contain a string that contains a unsigned integer (user ID)",
@@ -191,8 +193,10 @@ RGT::Devkit::JWTPayload HTTPRequestHandler::extractPayload(const std::string & t
 
     // Извлекаем role
     const Poco::JSON::Object & payload = decoded.payload();
-    try {
-        tokenPayload.role = payload.getValue<std::string>("role");
+    try 
+    {
+        std::string rawRole = payload.getValue<std::string>("role");
+        tokenPayload.role = RGT::Devkit::mapStringToUserRole(rawRole);
     }
     catch (...) {
         throw RGT::Devkit::RGTException("Received token does not contain 'role' field or 'role' field is not string type",

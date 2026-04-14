@@ -4,14 +4,16 @@
 #include <string>
 #include <chrono>
 
+#include <RGT/Devkit/Types.h>
+
 namespace RGT::Devkit
 {
 
 /// @brief Полезная нагрузка access токена
 struct JWTPayload 
 {
-    uint64_t             sub;
-    std::string          role;
+    UserId sub;
+    UserRole role;
     std::chrono::seconds exp;
 };
 
