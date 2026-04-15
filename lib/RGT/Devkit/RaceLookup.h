@@ -43,7 +43,7 @@ bool isRaceExists(Poco::Data::Session & session, RedisClientObjectPool & redisPo
 
 /* - */
 
-/// @brief Проверяет, входит ли пользователь в список участников гонки
+/// @brief Проверяет, входит ли пользователь в список участников гонки (включая тренеров)
 /// @param session psql сессия
 /// @param pc cоединение с redis
 /// @param raceId ID гонки
@@ -52,7 +52,7 @@ bool isRaceExists(Poco::Data::Session & session, RedisClientObjectPool & redisPo
 bool isParticipationExists(Poco::Data::Session & session, Poco::Redis::PooledConnection & pc, 
     RaceId raceId, UserId userId);
 
-/// @brief Проверяет, входит ли пользователь в список участников гонки
+/// @brief Проверяет, входит ли пользователь в список участников гонки (включая тренеров)
 /// @param sessionPool пул сессий с psql
 /// @param pc cоединение с redis
 /// @param raceId ID гонки
@@ -61,7 +61,7 @@ bool isParticipationExists(Poco::Data::Session & session, Poco::Redis::PooledCon
 bool isParticipationExists(Poco::Data::SessionPool & sessionPool, Poco::Redis::PooledConnection & pc, 
     RaceId raceId, UserId userId);
 
-/// @brief Проверяет, входит ли пользователь в список участников гонки
+/// @brief Проверяет, входит ли пользователь в список участников гонки (включая тренеров)
 /// @param sessionPool пул сессий с psql
 /// @param redisPool пул соединений с redis
 /// @param raceId ID гонки
@@ -70,7 +70,7 @@ bool isParticipationExists(Poco::Data::SessionPool & sessionPool, Poco::Redis::P
 bool isParticipationExists(Poco::Data::SessionPool & sessionPool, RedisClientObjectPool & redisPool, 
     RaceId raceId, UserId userId);
 
-/// @brief Проверяет, входит ли пользователь в список участников гонки
+/// @brief Проверяет, входит ли пользователь в список участников гонки (включая тренеров)
 /// @param session psql сессия
 /// @param redisPool пул соединений с redis
 /// @param raceId ID гонки
