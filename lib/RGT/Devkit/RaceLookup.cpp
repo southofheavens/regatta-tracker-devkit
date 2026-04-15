@@ -7,6 +7,8 @@
 namespace
 {
 
+constexpr std::chrono::seconds default_ttl = std::chrono::seconds(900);
+
 std::optional<bool> isRaceExistsRedis(Poco::Redis::Client::Ptr redisClient, RGT::Devkit::RaceId raceId)
 {
     Poco::Redis::BulkString redisReply = redisClient->execute<Poco::Redis::BulkString>
@@ -71,8 +73,6 @@ std::optional<RGT::Devkit::RaceStatus> getRaceStatusRedis(Poco::Redis::Client::P
 
 namespace RGT::Devkit
 {
-
-constexpr std::chrono::seconds default_ttl = std::chrono::seconds(900);
 
 bool isRaceExists(Poco::Data::Session & session, Poco::Redis::PooledConnection & pc, RaceId raceId)
 {
@@ -272,6 +272,58 @@ RaceStatus getRaceStatus(Poco::Data::Session & session, RedisClientObjectPool & 
 {
     Poco::Redis::PooledConnection pc(redisPool, 500);
     return getRaceStatus(session, pc, raceId);
+}
+
+std::vector<RGT::Devkit::UserId> getParticipantsOfRace(Poco::Data::Session & session, 
+    Poco::Redis::PooledConnection pc, RGT::Devkit::RaceId raceId)
+{
+    // Сначала смотрим в Redis
+
+    // ...
+
+    // В Redis ничего не оказалось, поэтому ищем в БД и кэшируем в Redis
+
+    std::vector<uint64_t> rawParticipantsIds;
+    std::vector<RGT::Devkit::UserId> participantsIds;
+    participantsIds.reserve(rawParticipantsIds.size());
+
+    session << 
+        "SELECT user_id "
+        "FROM participations "
+        "WHERE race_id = $1 AND role = 'participant';",
+        Poco::Data::Keywords::bind(RGT::Devkit::mapRaceIdToUint(raceId)),
+        Poco::Data::Keywords::into(rawParticipantsIds),
+        Poco::Data::Keywords::now;
+
+    for (uint64_t rawId : rawParticipantsIds) {
+        participantsIds.push_back(RGT::Devkit::mapUintToUserId(rawId));
+    }
+
+    // redisClient->execute...
+
+    return participantsIds;
+}
+
+std::vector<RGT::Devkit::UserId> getParticipantsOfRace(Poco::Data::SessionPool & sessionPool, 
+    Poco::Redis::PooledConnection pc, RGT::Devkit::RaceId raceId)
+{
+    Poco::Data::Session session = sessionPool.get();
+    return getParticipantsOfRace(session, pc, raceId);
+}
+
+std::vector<RGT::Devkit::UserId> getParticipantsOfRace(Poco::Data::SessionPool & sessionPool, 
+    RedisClientObjectPool & redisPool, RGT::Devkit::RaceId raceId)
+{
+    Poco::Data::Session session = sessionPool.get();
+    Poco::Redis::PooledConnection pc(redisPool, 500);
+    return getParticipantsOfRace(session, pc, raceId);
+}
+
+std::vector<RGT::Devkit::UserId> getParticipantsOfRace(Poco::Data::Session & session, 
+    RedisClientObjectPool & redisPool, RGT::Devkit::RaceId raceId)
+{
+    Poco::Redis::PooledConnection pc(redisPool, 500);
+    return getParticipantsOfRace(session, pc, raceId);
 }
 
 } // namespace RGT::Devkit
