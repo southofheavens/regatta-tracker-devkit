@@ -118,7 +118,7 @@ private:
         jsonBody->set("surname", surname);
         jsonBody->set("login", login);
         jsonBody->set("password", default_password);
-        jsonBody->set("role", (role == Role::Participant ? "Participant" : "Judge"));
+        jsonBody->set("role", (role == Role::Participant ? "participant" : "judge"));
         
         // Приводим тело запроса из Poco::JSON::Object к std::string
         std::ostringstream bodyStream;
