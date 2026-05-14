@@ -5,6 +5,49 @@
 
 #include <aws/core/auth/AWSCredentials.h>
 
+#include <algorithm>
+#include <cctype>
+#include <string>
+#include <utility>
+
+namespace
+{
+
+Aws::Http::Scheme minioSchemeFromEnv()
+{
+    std::optional<std::string> raw = RGT::Devkit::getEnv("MINIO_SCHEME");
+    if (not raw.has_value()) {
+        return Aws::Http::Scheme::HTTP;
+    }
+    std::string lowered = *raw;
+    std::transform(lowered.begin(), lowered.end(), lowered.begin(),
+        [](unsigned char c)
+    {
+        return static_cast<char>(std::tolower(c));
+    });
+
+    return lowered == "https" ? Aws::Http::Scheme::HTTPS : Aws::Http::Scheme::HTTP;
+}
+
+std::pair<std::string, Aws::Http::Scheme> normalizedHostPortAndScheme
+(
+    std::string endpoint,
+    Aws::Http::Scheme envScheme
+)
+{
+    if (endpoint.starts_with("https://")) {
+        endpoint.erase(0, 8);
+        return {std::move(endpoint), Aws::Http::Scheme::HTTPS};
+    }
+    if (endpoint.starts_with("http://")) {
+        endpoint.erase(0, 7);
+        return {std::move(endpoint), Aws::Http::Scheme::HTTP};
+    }
+    return {std::move(endpoint), envScheme};
+}
+
+} // namespace
+
 namespace RGT::Devkit::Connections
 {
 
@@ -61,7 +104,12 @@ std::unique_ptr<Aws::S3::S3Client> connectToS3
             "or config (minio.endpoint_override)");
     }
 
-    return connectToS3(*accessKeyId, *secretKey, *endpointOverride, "", Aws::Http::Scheme::HTTPS, false, false);
+    const Aws::Http::Scheme envScheme = minioSchemeFromEnv();
+    auto [hostPort, scheme] = normalizedHostPortAndScheme(*endpointOverride, envScheme);
+    constexpr bool verifySsl = false;
+
+    return connectToS3(*accessKeyId, *secretKey, hostPort, "", scheme, verifySsl, false,
+        Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy::Never);
 }
 
 } // namespace RGT::Devkit::Connections
