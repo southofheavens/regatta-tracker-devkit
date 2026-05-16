@@ -12,8 +12,14 @@
 #include <RGT/Devkit/TestTools/General.h>
 #include <RGT/Devkit/TestTools/ConnectionRegistry.h>
 
+#include <Poco/Data/Data.h>
+
 namespace RGT::Devkit::TestTools
 {
+
+struct ExistingAccountTag {};
+
+inline constexpr ExistingAccountTag existing_account{};
 
 const std::string default_password    = "default_passworD1";
 const std::string default_fingerprint = "default_fingerprint";
@@ -30,11 +36,28 @@ public:
         // , login_{login}
     {
         User::signUp(name, surname, login, role);
-        User::login(login);
+        User::login(login, default_password);
+    }
+
+    /// @brief Уже существующий пользователь: только login, без register/delete.
+    User(ExistingAccountTag, const std::string & login, const std::string & password)
+    {
+        deleteOnDestroy_ = false;
+        User::login(login, password);
+        id_ = loadUserIdByLogin(login);
+    }
+
+    static User fromExisting(const std::string & login, const std::string & password)
+    {
+        return User(existing_account, login, password);
     }
 
     ~User()
-    { RGT::Devkit::TestTools::deleteUser(ConnectionRegistry::instance().getPsqlPool(), id_); }
+    {
+        if (deleteOnDestroy_) {
+            RGT::Devkit::TestTools::deleteUser(ConnectionRegistry::instance().getPsqlPool(), id_);
+        }
+    }
 
     /// @brief Возвращает заготовку запроса с установленными заголовками X-Fingerprint и User-Agent, 
     /// где значения равны константам default_fingerprint и default_user_agent, и Authorization, который
@@ -152,8 +175,23 @@ private:
         }
     }
 
+    uint64_t loadUserIdByLogin(const std::string & login)
+    {
+        Poco::Data::Session session = ConnectionRegistry::instance().getPsqlPool().get();
+        uint64_t userId = 0;
+        std::string loginCopy = login;
+        session << "SELECT id FROM users WHERE login = $1",
+            Poco::Data::Keywords::into(userId),
+            Poco::Data::Keywords::use(loginCopy),
+            Poco::Data::Keywords::now;
+        if (userId == 0) {
+            throw std::runtime_error("user id not found for login: " + login);
+        }
+        return userId;
+    }
+
     // Выполняется один раз в конструкторе
-    void login(const std::string & login)
+    void login(const std::string & login, const std::string & password)
     {
         Poco::Net::HTTPClientSession session("127.0.0.1", 80); 
         Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST, "/auth/login");
@@ -166,7 +204,7 @@ private:
         // Формируем тело запроса
         Poco::JSON::Object::Ptr jsonBody(new Poco::JSON::Object);
         jsonBody->set("login", login);
-        jsonBody->set("password", default_password);
+        jsonBody->set("password", password);
 
         // Приводим тело запроса из Poco::JSON::Object к std::string
         std::ostringstream bodyStream;
@@ -218,7 +256,8 @@ private:
     // void setRefreshToken(const std::string & token) { refreshToken_ = token; }
 
 private:
-    uint64_t id_;
+    bool deleteOnDestroy_{true};
+    uint64_t id_{};
     // std::string name_;
     // std::string surname_;
     // std::string login_;

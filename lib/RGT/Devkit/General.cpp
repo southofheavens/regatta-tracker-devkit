@@ -101,6 +101,38 @@ std::string readLuaScript(const std::string & filename)
     );
 }
 
+void readDotEnvFile(const std::string & path)
+{
+    std::ifstream file(path);
+    if (not file.is_open()) {
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        trimString(line);
+        if (line.empty() or line[0] == '#') {
+            continue;
+        }
+        std::pair<std::string, std::string> envVar = parseEnvVar(line);
+        if (setenv(envVar.first.c_str(), envVar.second.c_str(), 0) != 0)
+        {
+            throw std::runtime_error
+            (
+                std::format
+                (
+                    "An error occurred while attempting to set an environment "
+                    "variable with the name {} and the value {} (from {})",
+                    envVar.first,
+                    envVar.second,
+                    path
+                )
+            );
+        }
+    }
+}
+
 void readDotEnv()
 {
     static bool alreadyRead = false;
@@ -109,30 +141,15 @@ void readDotEnv()
         return;
     }
 
-    std::fstream file;
-    file.open(".env", std::ios::in);
-    
-    std::string line;
-    while (std::getline(file, line))
+    static const char * paths[] =
     {
-        trimString(line);
-        if (line.empty()) {
-            continue;
-        }
-        std::pair<std::string, std::string> envVar = parseEnvVar(line);
-        if (setenv(envVar.first.c_str(), envVar.second.c_str(), 0) != 0) 
-        {
-            throw std::runtime_error
-            (
-                std::format
-                (
-                    "An error occurred while attempting to set an environment "
-                    "variable with the name {} and the value {}",
-                    envVar.first,
-                    envVar.second
-                )
-            );
-        }
+        ".env",
+        "../regatta-tracker-main/.env",
+        "../../regatta-tracker-main/.env",
+    };
+
+    for (const char * path : paths) {
+        readDotEnvFile(path);
     }
 
     alreadyRead = true;

@@ -11,9 +11,9 @@ namespace RGT::Devkit
 // Считывает lua-script из файла с именем filename и возвращает его
 std::string readLuaScript(const std::string & filename);
 
-/// @brief Считывает и устанавливает переменные окружения, находящиеся в файле .env, который расположен
-/// на одном уровне с meson.build. Если переменная окружения уже задана, перезаписи не будет.
-/// @throw std::runtime_error при ошибке (отсутствует .env, переменные окружения некорректно заданы и т.д.)
+/// @brief Загружает .env из cwd, затем из regatta-tracker-main/.env (для локального запуска).
+/// Уже заданные переменные окружения не перезаписываются.
+/// @throw std::runtime_error при ошибке разбора
 void readDotEnv();
 
 std::optional<std::string> getEnv(const std::string & envVarName);
