@@ -144,8 +144,11 @@ void readDotEnv()
     static const char * paths[] =
     {
         ".env",
+        "tests.env",
+        "../tests/.env",
         "../regatta-tracker-main/.env",
         "../../regatta-tracker-main/.env",
+        "../regatta-tracker-main/tests/.env",
     };
 
     for (const char * path : paths) {
